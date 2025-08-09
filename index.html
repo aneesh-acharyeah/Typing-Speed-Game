@@ -1,0 +1,186 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Speed Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    #game-container {
+      text-align: center;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #word {
+      font-size: 24px;
+      margin: 20px 0;
+      color: #333;
+    }
+    #input {
+      padding: 10px;
+      font-size: 16px;
+      width: 200px;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+    }
+    #input.correct {
+      border-color: green;
+    }
+    #input.incorrect {
+      border-color: red;
+    }
+    #timer, #score {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+    #start-btn, #restart-btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #start-btn:hover, #restart-btn:hover {
+      background-color: #45a049;
+    }
+    #restart-btn {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <h1>Typing Speed Game</h1>
+    <div id="word"></div>
+    <input type="text" id="input" placeholder="Type the word here" disabled>
+    <div id="timer">Time: 30</div>
+    <div id="score">Score: 0</div>
+    <button id="start-btn">Start Game</button>
+    <button id="restart-btn">Restart Game</button>
+  </div>
+
+  <script>
+    const words = [
+      "apple", "book", "cat", "dog", "elephant", "fish", "grape", "house", 
+      "ice", "jump", "kite", "lion", "moon", "nest", "orange", "pen"
+    ];
+    let score = 0;
+    let timeLeft = 30;
+    let timerInterval = null;
+    let currentWord = '';
+
+    const wordElement = document.getElementById('word');
+    const inputElement = document.getElementById('input');
+    const timerElement = document.getElementById('timer');
+    const scoreElement = document.getElementById('score');
+    const startButton = document.getElementById('start-btn');
+    const restartButton = document.getElementById('restart-btn');
+
+    function getRandomWord() {
+      return words[Math.floor(Math.random() * words.length)];
+    }
+
+    function startGame() {
+      score = 0;
+      timeLeft = 30;
+      scoreElement.textContent = `Score: ${score}`;
+      timerElement.textContent = `Time: ${timeLeft}`;
+      inputElement.value = '';
+      inputElement.disabled = false;
+      inputElement.focus();
+      startButton.style.display = 'none';
+      restartButton.style.display = 'none';
+      currentWord = getRandomWord();
+      wordElement.textContent = currentWord;
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      timeLeft--;
+      timerElement.textContent = `Time: ${timeLeft}`;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        inputElement.disabled = true;
+        wordElement.textContent = `Game Over! Final Score: ${score}`;
+        restartButton.style.display = 'block';
+      }
+    }
+
+    function checkInput() {
+      const typedText = inputElement.value.trim();
+      if (typedText === currentWord) {
+        score++;
+        scoreElement.textContent = `Score: ${score}`;
+        inputElement.value = '';
+        currentWord = getRandomWord();
+        wordElement.textContent = currentWord;
+        inputElement.classList.remove('correct', 'incorrect');
+      } else if (currentWord.startsWith(typedText) && typedText !== '') {
+        inputElement.classList.add('correct');
+        inputElement.classList.remove('incorrect');
+      } else if (typedText !== '') {
+        inputElement.classList.add('incorrect');
+        inputElement.classList.remove('correct');
+      } else {
+        inputElement.classList.remove('correct', 'incorrect');
+      }
+    }
+
+    startButton.addEventListener('click', startGame);
+    restartButton.addEventListener('click', startGame);
+    inputElement.addEventListener('input', checkInput);
+  </script>
+</body>
+</html>
