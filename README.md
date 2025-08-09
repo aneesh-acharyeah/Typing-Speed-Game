@@ -25,7 +25,7 @@ A simple, beginner-friendly JavaScript web app to test and improve your typing s
    ```
 2. Navigate to the project directory:
    ```bash
-   cd typing-speed-game
+   cd Typing-Speed-Game
    ```
 3. Open `index.html` in a web browser to play the game locally.
 
