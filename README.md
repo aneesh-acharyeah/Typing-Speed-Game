@@ -21,7 +21,7 @@ A simple, beginner-friendly JavaScript web app to test and improve your typing s
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/typing-speed-game.git
+   git clone https://github.com/aneesh-acharyeah/Typing-Speed-Game.git
    ```
 2. Navigate to the project directory:
    ```bash
@@ -59,13 +59,3 @@ Contributions are welcome! To contribute:
 4. Push to the branch (`git push origin feature-name`).
 5. Open a pull request.
 
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgements
-- Built as a beginner-friendly JavaScript project for GitHub portfolios.
-- Inspired by typing games like TypeRacer, but kept simple for learning purposes.
-
----
-
-*Replace `your-username` and the demo link placeholder with your actual GitHub username and live demo URL after deployment.*
