@@ -9,9 +9,6 @@ A simple, beginner-friendly JavaScript web app to test and improve your typing s
 - **Timer**: 30-second countdown to challenge your speed.
 - **Responsive Design**: Clean, minimal UI that works on desktop and mobile browsers.
 
-## Demo
-[Play the game live here!](#) *(Replace with your GitHub Pages or Netlify link)*
-
 ## Getting Started
 
 ### Prerequisites
